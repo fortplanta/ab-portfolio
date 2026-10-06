@@ -1,0 +1,14 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { Button } from "@/components/ui/button";
+---
+
+<BaseLayout title="Portfolio — Foundation Check">
+  <main class="flex min-h-screen flex-col items-center justify-center gap-4">
+    <h1 class="text-3xl font-semibold tracking-tight">Foundation check</h1>
+    <p class="text-muted-foreground">
+      Astro + Tailwind v4 + React island + shadcn/ui (Radix) are wired up.
+    </p>
+    <Button client:load>Hydrated shadcn button</Button>
+  </main>
+</BaseLayout>
