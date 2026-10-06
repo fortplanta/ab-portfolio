@@ -57,3 +57,17 @@ Content is fetched **at build time** (static output), so a Payload publish doesn
 ## Environment variables
 
 See `.env.example`. No secrets are required for fixture mode.
+
+## Deployment
+
+- **Repo:** https://github.com/fortplanta/ab-portfolio
+- **Live URL:** https://ab-portfolio-138.netlify.app
+- **Netlify project:** https://app.netlify.com/projects/ab-portfolio-138
+
+The Netlify site was created and manually deployed via `netlify deploy --prod --build`, with build settings in `netlify.toml` (`pnpm build` → `dist`) and `CONTENT_SOURCE=fixture` set as a site env var. It is **not yet connected to GitHub for continuous deployment** — that one-time step grants Netlify's GitHub App access to the repo and needs to happen interactively in a browser:
+
+1. In the [Netlify project](https://app.netlify.com/projects/ab-portfolio-138), go to **Project configuration → Build & deploy → Continuous deployment**, click **Link repository**, and select `fortplanta/ab-portfolio`.
+2. Confirm the build command (`pnpm build`) and publish directory (`dist`) match `netlify.toml` (they should auto-detect).
+3. Once linked, every push to `main` deploys automatically, and deploy previews are generated for PRs.
+
+To wire up the Payload publish → rebuild flow described above, create a build hook under **Build & deploy → Build hooks** and use its URL as `NETLIFY_BUILD_HOOK_URL` in the Payload `afterChange` hook.
