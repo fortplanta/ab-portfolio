@@ -1,0 +1,17 @@
+---
+import type { TextSection as TextSectionData } from "@/lib/content/types";
+
+interface Props {
+  section: TextSectionData;
+}
+
+const { section } = Astro.props;
+const bodyParagraphs = section.body?.split("\n\n") ?? [];
+---
+
+<div class="mx-auto max-w-2xl text-center">
+  {section.heading && <h2 class="mb-4 text-2xl font-semibold tracking-tight">{section.heading}</h2>}
+  {bodyParagraphs.map((paragraph) => (
+    <p class="text-base leading-relaxed text-foreground/90">{paragraph}</p>
+  ))}
+</div>

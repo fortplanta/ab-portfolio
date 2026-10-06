@@ -1,0 +1,28 @@
+---
+import type { HeroSection as HeroSectionData } from "@/lib/content/types";
+
+interface Props {
+  section: HeroSectionData;
+  isFirstHero: boolean;
+}
+
+const { section, isFirstHero } = Astro.props;
+---
+
+<img
+  src={section.media.src}
+  alt={section.media.alt}
+  width={section.media.width}
+  height={section.media.height}
+  loading={isFirstHero ? "eager" : "lazy"}
+  fetchpriority={isFirstHero ? "high" : "auto"}
+  class="absolute inset-0 h-full w-full object-cover can-hover:transition-transform can-hover:duration-700 can-hover:ease-out can-hover:hover:scale-105"
+/>
+<div class="absolute inset-0 bg-black/20" aria-hidden="true"></div>
+{
+  section.heading && (
+    <h2 class="relative z-10 px-6 text-center text-4xl font-semibold tracking-tight text-white md:text-6xl">
+      {section.heading}
+    </h2>
+  )
+}

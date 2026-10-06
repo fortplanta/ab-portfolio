@@ -1,0 +1,29 @@
+---
+import type { ImageGridSection as ImageGridSectionData } from "@/lib/content/types";
+
+interface Props {
+  section: ImageGridSectionData;
+}
+
+const { section } = Astro.props;
+---
+
+<div class="mx-auto max-w-5xl">
+  {section.heading && <h2 class="mb-6 text-2xl font-semibold tracking-tight">{section.heading}</h2>}
+  <div class="grid grid-cols-2 gap-4">
+    {section.items.map((item) => (
+      <figure class="overflow-hidden">
+        <img
+          src={item.media.src}
+          alt={item.media.alt}
+          width={item.media.width}
+          height={item.media.height}
+          loading="lazy"
+          class="w-full object-cover can-hover:transition-transform can-hover:duration-700 can-hover:ease-out can-hover:hover:scale-105"
+          style={`aspect-ratio: ${item.media.width} / ${item.media.height};`}
+        />
+        {item.caption && <figcaption class="mt-2 text-sm text-muted-foreground">{item.caption}</figcaption>}
+      </figure>
+    ))}
+  </div>
+</div>

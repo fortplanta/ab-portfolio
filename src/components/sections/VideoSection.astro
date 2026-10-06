@@ -1,0 +1,29 @@
+---
+import type { VideoSection as VideoSectionData } from "@/lib/content/types";
+
+interface Props {
+  section: VideoSectionData;
+}
+
+const { section } = Astro.props;
+const bodyParagraphs = section.body?.split("\n\n") ?? [];
+---
+
+<figure class="mx-auto max-w-5xl">
+  {section.heading && <h2 class="mb-6 text-2xl font-semibold tracking-tight">{section.heading}</h2>}
+  <video
+    width={section.media.width}
+    height={section.media.height}
+    poster={section.media.poster.src}
+    controls
+    preload="none"
+    class="w-full object-cover"
+    style={`aspect-ratio: ${section.media.width} / ${section.media.height};`}
+  >
+    <source src={section.media.src} />
+  </video>
+  {section.caption && <figcaption class="mt-3 text-sm text-muted-foreground">{section.caption}</figcaption>}
+  {bodyParagraphs.map((paragraph) => (
+    <p class="mt-6 max-w-prose text-base leading-relaxed text-foreground/90">{paragraph}</p>
+  ))}
+</figure>

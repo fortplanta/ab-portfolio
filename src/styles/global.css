@@ -4,6 +4,8 @@
 @import "@fontsource-variable/geist";
 
 @custom-variant dark (&:is(.dark *));
+/* Hover-capable, fine-pointer devices only — excludes touch's "sticky hover". */
+@custom-variant can-hover (@media (hover: hover) and (pointer: fine));
 
 :root {
   --nav-height: 64px;
@@ -46,6 +48,56 @@
 html {
   scroll-snap-type: y proximity;
   scroll-behavior: auto;
+}
+
+/*
+ * Per-section nav contrast: ActiveNavController.ts tracks which section is
+ * under the active line and sets data-nav-contrast="dark"|"light" on <html>
+ * accordingly. The value names the nav's OWN treatment — "dark" renders
+ * dark nav text (for a light section behind it), "light" renders light nav
+ * text (for a dark section behind it).
+ *
+ * Written as two attribute-scoped rules rather than one rule reading a
+ * `--nav-fg` custom property: a `color-mix(in oklch, var(--nav-fg) ...)`
+ * version didn't pick up changes to the variable at runtime in this
+ * Tailwind v4 / Lightning CSS pipeline (root cause not isolated — possibly
+ * layer/minification interaction), while this direct form works reliably.
+ */
+.nav-link {
+  color: color-mix(in oklch, oklch(0.985 0 0) 70%, transparent); /* light text — default */
+  transition:
+    color 200ms ease,
+    background-color 200ms ease-out,
+    transform 150ms ease-out;
+}
+.nav-link:hover {
+  color: oklch(0.985 0 0);
+}
+:root[data-nav-contrast="dark"] .nav-link {
+  color: color-mix(in oklch, oklch(0.145 0 0) 70%, transparent);
+}
+:root[data-nav-contrast="dark"] .nav-link:hover {
+  color: oklch(0.145 0 0);
+}
+.nav-link:active {
+  transform: scale(0.97);
+  transition-duration: 100ms;
+}
+
+/*
+ * Scroll-reveal: the hidden ("pre-reveal") state is only ever applied by
+ * scroll-reveal.ts, on elements it has already confirmed are below the
+ * fold — never by default. That keeps content fully visible with no JS,
+ * and skips the enter-hidden-then-fade flash for anything already in view
+ * on load.
+ */
+[data-reveal] {
+  transition: opacity 500ms var(--ease-out-strong), clip-path 600ms var(--ease-out-strong);
+}
+
+[data-reveal].pre-reveal {
+  opacity: 0;
+  clip-path: inset(0 0 12% 0);
 }
 
 @media (prefers-reduced-motion: reduce) {

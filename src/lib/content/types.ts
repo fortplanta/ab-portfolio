@@ -1,3 +1,4 @@
+/** The nav's own treatment while this section sits under it — "dark" = dark nav text, "light" = light nav text. */
 export type NavContrast = "light" | "dark";
 export type PublicationStatus = "draft" | "published";
 export type SectionType = "hero" | "image" | "video" | "text" | "image-grid";
