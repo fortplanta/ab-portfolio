@@ -9,15 +9,18 @@ interface Props {
 const { section, isFirstHero } = Astro.props;
 ---
 
-<img
-  src={section.media.src}
-  alt={section.media.alt}
-  width={section.media.width}
-  height={section.media.height}
-  loading={isFirstHero ? "eager" : "lazy"}
-  fetchpriority={isFirstHero ? "high" : "auto"}
-  class="absolute inset-0 h-full w-full object-cover can-hover:transition-transform can-hover:duration-700 can-hover:ease-out can-hover:hover:scale-105"
-/>
+<picture>
+  {section.mobileMedia && <source media="(max-width: 767px)" srcset={section.mobileMedia.src} />}
+  <img
+    src={section.media.src}
+    alt={section.media.alt}
+    width={section.media.width}
+    height={section.media.height}
+    loading={isFirstHero ? "eager" : "lazy"}
+    fetchpriority={isFirstHero ? "high" : "auto"}
+    class="absolute inset-0 h-full w-full object-cover can-hover:transition-transform can-hover:duration-700 can-hover:ease-out can-hover:hover:scale-105"
+  />
+</picture>
 <div class="absolute inset-0 bg-black/20" aria-hidden="true"></div>
 {
   section.heading && (

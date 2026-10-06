@@ -11,15 +11,20 @@ const { section } = Astro.props;
 <figure class="mx-auto max-w-5xl">
   {section.heading && <h2 class="mb-6 text-2xl font-semibold tracking-tight">{section.heading}</h2>}
   <div class="overflow-hidden">
-    <img
-      src={section.media.src}
-      alt={section.media.alt}
-      width={section.media.width}
-      height={section.media.height}
-      loading="lazy"
-      class="w-full object-cover can-hover:transition-transform can-hover:duration-700 can-hover:ease-out can-hover:hover:scale-105"
-      style={`aspect-ratio: ${section.media.width} / ${section.media.height};`}
-    />
+    <picture>
+      {section.mobileMedia && (
+        <source media="(max-width: 767px)" srcset={section.mobileMedia.src} />
+      )}
+      <img
+        src={section.media.src}
+        alt={section.media.alt}
+        width={section.media.width}
+        height={section.media.height}
+        loading="lazy"
+        class="w-full object-cover can-hover:transition-transform can-hover:duration-700 can-hover:ease-out can-hover:hover:scale-105"
+        style={`aspect-ratio: ${section.media.width} / ${section.media.height};`}
+      />
+    </picture>
   </div>
   {section.caption && <figcaption class="mt-3 text-sm text-muted-foreground">{section.caption}</figcaption>}
 </figure>

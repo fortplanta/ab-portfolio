@@ -20,6 +20,9 @@ const bodyParagraphs = section.body?.split("\n\n") ?? [];
     class="w-full object-cover"
     style={`aspect-ratio: ${section.media.width} / ${section.media.height};`}
   >
+    {section.mobileMedia && (
+      <source src={section.mobileMedia.src} media="(max-width: 767px)" />
+    )}
     <source src={section.media.src} />
   </video>
   {section.caption && <figcaption class="mt-3 text-sm text-muted-foreground">{section.caption}</figcaption>}

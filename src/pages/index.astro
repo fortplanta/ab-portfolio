@@ -12,8 +12,14 @@ const projects = await adapter.getProjects();
   title="Portfolio"
   description="Selected client work — identity, web, campaign, and photography projects."
 >
+  <a
+    href="#main-content"
+    class="sr-only z-[60] rounded-md bg-foreground px-4 py-2 text-background focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
+  >
+    Skip to content
+  </a>
   <SiteNav projects={projects} />
-  <main>
+  <main id="main-content">
     {
       projects.map((project, index) => (
         <ProjectSection project={project} isFirstProject={index === 0} />
