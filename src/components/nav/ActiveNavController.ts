@@ -39,6 +39,29 @@ function init() {
   let projectObserver: IntersectionObserver | undefined;
   let sectionObserver: IntersectionObserver | undefined;
   let currentActiveSlug: string | undefined;
+  const indicatorEl = document.getElementById("nav-indicator");
+
+  /**
+   * One element sliding/resizing to the active link, instead of each pill
+   * independently transitioning its own background-color. Two separate
+   * elements fading between colors reads as two objects swapping; a single
+   * element moving reads as one continuous thing — same idea as the design
+   * skill's "duplicate + clip" tab technique, achieved here by moving a
+   * shared element instead of clipping a second copy of the tab list.
+   */
+  function positionIndicator(linkEl: HTMLElement | undefined, instant: boolean) {
+    if (!indicatorEl || !linkEl) return;
+    const navRect = navEl!.getBoundingClientRect();
+    const linkRect = linkEl.getBoundingClientRect();
+    if (instant) indicatorEl.classList.add("no-transition");
+    indicatorEl.style.width = `${linkRect.width}px`;
+    indicatorEl.style.height = `${linkRect.height}px`;
+    indicatorEl.style.transform = `translate(${linkRect.left - navRect.left}px, ${linkRect.top - navRect.top}px)`;
+    if (instant) {
+      void indicatorEl.offsetWidth; // flush the instant position before re-enabling transitions
+      indicatorEl.classList.remove("no-transition");
+    }
+  }
 
   /** Nav's own occlusion of the viewport's top edge, however it's currently laid out. */
   function getNavOcclusionPx(): number {
@@ -53,16 +76,21 @@ function init() {
     return window.scrollY < 10 ? els[0] : els[els.length - 1];
   }
 
-  function applyActiveProject(slug: string) {
-    if (slug === currentActiveSlug) return;
-    currentActiveSlug = slug;
-    for (const link of navLinks) {
-      if (link.dataset.slug === slug) {
-        link.setAttribute("aria-current", "true");
-      } else {
-        link.removeAttribute("aria-current");
+  function applyActiveProject(slug: string, instant = false) {
+    if (slug !== currentActiveSlug) {
+      currentActiveSlug = slug;
+      for (const link of navLinks) {
+        if (link.dataset.slug === slug) {
+          link.setAttribute("aria-current", "true");
+        } else {
+          link.removeAttribute("aria-current");
+        }
       }
     }
+    positionIndicator(
+      navLinks.find((link) => link.dataset.slug === slug),
+      instant,
+    );
   }
 
   function applyActiveContrast(contrast: string | undefined) {
@@ -80,7 +108,7 @@ function init() {
       sectionIntersecting.set(el, rect.top <= activeLinePx && rect.bottom > activeLinePx);
     }
     const activeProjectEl = pickActive(projectEls, projectIntersecting);
-    applyActiveProject(activeProjectEl.dataset.projectSlug!);
+    applyActiveProject(activeProjectEl.dataset.projectSlug!, true);
     const activeSectionEl = pickActive(sectionEls, sectionIntersecting);
     applyActiveContrast(activeSectionEl?.dataset.navContrast);
   }
@@ -121,7 +149,15 @@ function init() {
 
   function recomputeActiveLine() {
     viewportHeight = window.innerHeight;
-    activeLinePx = getNavOcclusionPx() + ACTIVE_LINE_BUFFER_PX;
+    const navOcclusion = getNavOcclusionPx();
+    activeLinePx = navOcclusion + ACTIVE_LINE_BUFFER_PX;
+    // Keeps native CSS scroll-snap's landing position in agreement with
+    // scrollToProject()'s own nav-occlusion-aware target. Without this,
+    // snapping lands a project's raw top at scrollY=0 (under the nav) while
+    // clicking a nav link lands it just below the nav — two different
+    // "resting" positions for the same project, which is what made snap
+    // feel inconsistent with ordinary scrolling.
+    document.documentElement.style.scrollPaddingTop = `${navOcclusion}px`;
     buildObservers();
     recomputeFromRects();
   }
@@ -170,9 +206,9 @@ function init() {
     if (opts.updateHistory === "push") {
       history.pushState(null, "", `#${slug}`);
     }
-    applyActiveProject(slug);
-    const behavior: ScrollBehavior = opts.instant || prefersReducedMotion() ? "auto" : "smooth";
-    window.scrollTo({ top: targetY, behavior });
+    const instant = opts.instant || prefersReducedMotion();
+    applyActiveProject(slug, instant);
+    window.scrollTo({ top: targetY, behavior: instant ? "auto" : "smooth" });
   }
 
   navEl.addEventListener("click", (event) => {
