@@ -1,5 +1,6 @@
 import type { Project } from "@/lib/content/types";
 import { createFixtureAdapter } from "@/lib/content/fixture-adapter";
+import { createPayloadAdapter } from "@/lib/content/payload-adapter";
 
 export interface GetProjectsOptions {
   includeDrafts?: boolean;
@@ -19,11 +20,14 @@ export function getAdapter(): ContentAdapter {
 
   switch (source) {
     case "payload": {
-      // Loaded dynamically so the fixture build never pays for (or requires
-      // env vars for) the Payload adapter's fetch calls.
-      throw new Error(
-        "CONTENT_SOURCE=payload is not wired up yet — see src/lib/content/payload-adapter.ts",
-      );
+      const baseUrl = import.meta.env.PAYLOAD_API_URL;
+      if (!baseUrl) {
+        throw new Error(
+          "CONTENT_SOURCE=payload requires PAYLOAD_API_URL to be set (see .env.example)",
+        );
+      }
+      cachedAdapter = createPayloadAdapter({ baseUrl });
+      return cachedAdapter;
     }
     case "fixture":
     default:
