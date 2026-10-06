@@ -1,0 +1,32 @@
+---
+import type { Project } from "@/lib/content/types";
+import SectionRenderer from "@/components/project/SectionRenderer.astro";
+
+interface Props {
+  project: Project;
+  isFirstProject: boolean;
+}
+
+const { project, isFirstProject } = Astro.props;
+---
+
+<section
+  id={project.slug}
+  data-project-slug={project.slug}
+  data-display-order={project.displayOrder}
+  class="project-section relative w-full"
+  aria-label={`${project.client} — ${project.title}`}
+>
+  {
+    project.sections.map((section, index) => (
+      <SectionRenderer section={section} isFirstHero={isFirstProject && index === 0} />
+    ))
+  }
+</section>
+
+<style>
+  .project-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+  }
+</style>

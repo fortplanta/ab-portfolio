@@ -1,0 +1,24 @@
+---
+import NavLink from "@/components/nav/NavLink.astro";
+import type { Project } from "@/lib/content/types";
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+---
+
+<nav
+  id="site-nav"
+  aria-label="Projects"
+  class="fixed inset-x-0 top-0 z-50 flex items-center gap-1.5 overflow-x-auto px-4 py-3 md:inset-x-auto md:top-1/2 md:left-4 md:flex-col md:items-start md:gap-2 md:-translate-y-1/2 md:overflow-visible md:px-0 md:py-0"
+>
+  {
+    projects.map((project) => (
+      <NavLink slug={project.slug} label={project.title} />
+    ))
+  }
+</nav>
+
+<script src="./ActiveNavController.ts"></script>

@@ -1,0 +1,135 @@
+---
+import type { Section } from "@/lib/content/types";
+
+interface Props {
+  section: Section;
+  isFirstHero: boolean;
+}
+
+const { section, isFirstHero } = Astro.props;
+const bodyParagraphs = section.body?.split("\n\n") ?? [];
+---
+
+<div
+  id={section.id}
+  data-section-id={section.id}
+  data-nav-contrast={section.navContrast}
+  class:list={[
+    "section-block relative w-full overflow-hidden",
+    section.isFullScreen
+      ? "flex min-h-[100vh] min-h-[100dvh] items-center justify-center"
+      : "px-6 py-20 md:px-12 md:py-28",
+  ]}
+>
+  {
+    section.type === "hero" && (
+      <>
+        <img
+          src={section.media.src}
+          alt={section.media.alt}
+          width={section.media.width}
+          height={section.media.height}
+          loading={isFirstHero ? "eager" : "lazy"}
+          fetchpriority={isFirstHero ? "high" : "auto"}
+          class="absolute inset-0 h-full w-full object-cover"
+        />
+        <div class="absolute inset-0 bg-black/20" aria-hidden="true" />
+        {section.heading && (
+          <h2 class="relative z-10 px-6 text-center text-4xl font-semibold tracking-tight text-white md:text-6xl">
+            {section.heading}
+          </h2>
+        )}
+      </>
+    )
+  }
+
+  {
+    section.type === "image" && (
+      <figure class="mx-auto max-w-5xl">
+        {section.heading && (
+          <h2 class="mb-6 text-2xl font-semibold tracking-tight">{section.heading}</h2>
+        )}
+        <img
+          src={section.media.src}
+          alt={section.media.alt}
+          width={section.media.width}
+          height={section.media.height}
+          loading="lazy"
+          class="w-full object-cover"
+          style={`aspect-ratio: ${section.media.width} / ${section.media.height};`}
+        />
+        {section.caption && (
+          <figcaption class="mt-3 text-sm text-muted-foreground">{section.caption}</figcaption>
+        )}
+      </figure>
+    )
+  }
+
+  {
+    section.type === "video" && (
+      <figure class="mx-auto max-w-5xl">
+        {section.heading && (
+          <h2 class="mb-6 text-2xl font-semibold tracking-tight">{section.heading}</h2>
+        )}
+        <video
+          width={section.media.width}
+          height={section.media.height}
+          poster={section.media.poster.src}
+          controls
+          preload="none"
+          class="w-full object-cover"
+          style={`aspect-ratio: ${section.media.width} / ${section.media.height};`}
+        >
+          <source src={section.media.src} />
+        </video>
+        {section.caption && (
+          <figcaption class="mt-3 text-sm text-muted-foreground">{section.caption}</figcaption>
+        )}
+        {bodyParagraphs.map((paragraph) => (
+          <p class="mt-6 max-w-prose text-base leading-relaxed text-foreground/90">{paragraph}</p>
+        ))}
+      </figure>
+    )
+  }
+
+  {
+    section.type === "text" && (
+      <div class="mx-auto max-w-2xl text-center">
+        {section.heading && (
+          <h2 class="mb-4 text-2xl font-semibold tracking-tight">{section.heading}</h2>
+        )}
+        {bodyParagraphs.map((paragraph) => (
+          <p class="text-base leading-relaxed text-foreground/90">{paragraph}</p>
+        ))}
+      </div>
+    )
+  }
+
+  {
+    section.type === "image-grid" && (
+      <div class="mx-auto max-w-5xl">
+        {section.heading && (
+          <h2 class="mb-6 text-2xl font-semibold tracking-tight">{section.heading}</h2>
+        )}
+        <div class="grid grid-cols-2 gap-4">
+          {section.items.map((item) => (
+            <figure>
+              <img
+                src={item.media.src}
+                alt={item.media.alt}
+                width={item.media.width}
+                height={item.media.height}
+                loading="lazy"
+                class="w-full object-cover"
+                style={`aspect-ratio: ${item.media.width} / ${item.media.height};`}
+              />
+              {item.caption && (
+                <figcaption class="mt-2 text-sm text-muted-foreground">{item.caption}</figcaption>
+              )}
+            </figure>
+          ))}
+        </div>
+      </div>
+    )
+  }
+</div>

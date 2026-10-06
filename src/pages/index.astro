@@ -1,14 +1,23 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { Button } from "@/components/ui/button";
+import SiteNav from "@/components/nav/SiteNav.astro";
+import ProjectSection from "@/components/project/ProjectSection.astro";
+import { getAdapter } from "@/lib/content/adapter";
+
+const adapter = getAdapter();
+const projects = await adapter.getProjects();
 ---
 
-<BaseLayout title="Portfolio — Foundation Check">
-  <main class="flex min-h-screen flex-col items-center justify-center gap-4">
-    <h1 class="text-3xl font-semibold tracking-tight">Foundation check</h1>
-    <p class="text-muted-foreground">
-      Astro + Tailwind v4 + React island + shadcn/ui (Radix) are wired up.
-    </p>
-    <Button client:load>Hydrated shadcn button</Button>
+<BaseLayout
+  title="Portfolio"
+  description="Selected client work — identity, web, campaign, and photography projects."
+>
+  <SiteNav projects={projects} />
+  <main>
+    {
+      projects.map((project, index) => (
+        <ProjectSection project={project} isFirstProject={index === 0} />
+      ))
+    }
   </main>
 </BaseLayout>
