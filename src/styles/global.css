@@ -53,84 +53,30 @@ html {
 /*
  * Per-section nav contrast: ActiveNavController.ts tracks which section is
  * under the active line and sets data-nav-contrast="dark"|"light" on <html>
- * accordingly. The value names the nav's OWN treatment — "dark" renders a
- * light pill with dark text (for a light section behind it), "light"
- * renders a dark pill with light text (for a dark section behind it).
- *
- * The active state's fill comes from #nav-indicator (positioned by
- * ActiveNavController.ts), not from .nav-link's own background — one
- * element sliding to the active link reads as continuous movement, where
- * independently cross-fading two pills' background-color read as two
- * objects swapping (and, with a fixed-dark pill background, briefly
- * shipped invisible dark-on-dark text in the "dark" contrast state).
- *
- * All of .nav-link's rules live here in plain CSS rather than as Tailwind
- * utility classes: a `color-mix(in oklch, var(--nav-fg) ...)` version read
- * through a custom property didn't pick up runtime changes in this
- * Tailwind v4 / Lightning CSS pipeline, and keeping aria-current's styling
- * as Tailwind utilities risked losing a specificity contest against the
- * dark-contrast override rule below.
+ * accordingly — "dark" renders dark nav text (for a light section behind
+ * it), "light" renders light nav text (for a dark section behind it).
+ * No background/pill/indicator: active vs. inactive is text opacity only.
  */
 .nav-link {
-  background-color: color-mix(in oklch, oklch(0.145 0 0) 75%, transparent); /* dark pill — default, inactive */
-  color: oklch(0.985 0 0); /* light text */
+  color: oklch(0.985 0 0);
+  opacity: 0.55;
   transition:
+    opacity 180ms var(--ease-out-strong),
     color 180ms var(--ease-out-strong),
-    background-color 180ms var(--ease-out-strong),
     transform 150ms var(--ease-out-strong);
 }
+.nav-link:hover {
+  opacity: 0.8;
+}
 .nav-link[aria-current="true"] {
-  background-color: transparent; /* #nav-indicator provides the fill */
-  color: oklch(0.145 0 0);
+  opacity: 1;
 }
 :root[data-nav-contrast="dark"] .nav-link {
-  background-color: color-mix(in oklch, oklch(0.985 0 0) 75%, transparent); /* light pill, inactive */
-  color: oklch(0.145 0 0); /* dark text */
-}
-:root[data-nav-contrast="dark"] .nav-link[aria-current="true"] {
-  background-color: transparent;
-  color: oklch(0.985 0 0);
+  color: oklch(0.145 0 0);
 }
 .nav-link:active {
   transform: scale(0.97);
   transition-duration: 100ms;
-}
-
-.nav-indicator {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 0;
-  border-radius: 9999px;
-  background-color: oklch(0.985 0 0); /* light fill, default */
-  transition:
-    transform 220ms var(--ease-out-strong),
-    width 220ms var(--ease-out-strong),
-    height 220ms var(--ease-out-strong),
-    background-color 180ms var(--ease-out-strong);
-  pointer-events: none;
-}
-.nav-indicator.no-transition {
-  transition: none;
-}
-:root[data-nav-contrast="dark"] .nav-indicator {
-  background-color: oklch(0.145 0 0); /* dark fill */
-}
-
-/*
- * Scroll-reveal: the hidden ("pre-reveal") state is only ever applied by
- * scroll-reveal.ts, on elements it has already confirmed are below the
- * fold — never by default. That keeps content fully visible with no JS,
- * and skips the enter-hidden-then-fade flash for anything already in view
- * on load.
- */
-[data-reveal] {
-  transition: opacity 500ms var(--ease-out-strong), clip-path 600ms var(--ease-out-strong);
-}
-
-[data-reveal].pre-reveal {
-  opacity: 0;
-  clip-path: inset(0 0 12% 0);
 }
 
 @media (prefers-reduced-motion: reduce) {
