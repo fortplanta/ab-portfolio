@@ -1,12 +1,20 @@
 ---
 import "@/styles/global.css";
+import IntroAnimation from "@/components/intro/IntroAnimation.astro";
+
+interface IntroProps {
+  heroSrc: string;
+  heroAlt?: string;
+  title: string;
+}
 
 interface Props {
   title: string;
   description?: string;
+  intro?: IntroProps;
 }
 
-const { title, description } = Astro.props;
+const { title, description, intro } = Astro.props;
 ---
 
 <!doctype html>
@@ -20,6 +28,7 @@ const { title, description } = Astro.props;
     <meta name="generator" content={Astro.generator} />
   </head>
   <body>
+    {intro && <IntroAnimation heroSrc={intro.heroSrc} heroAlt={intro.heroAlt} title={intro.title} />}
     <slot />
   </body>
 </html>
