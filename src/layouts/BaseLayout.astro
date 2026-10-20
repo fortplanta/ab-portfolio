@@ -2,12 +2,19 @@
 import "@/styles/global.css";
 import IntroAnimation from "@/components/intro/IntroAnimation.astro";
 
+interface IntroProps {
+  heroSrc: string;
+  heroAlt?: string;
+  title: string;
+}
+
 interface Props {
   title: string;
   description?: string;
+  intro?: IntroProps;
 }
 
-const { title, description } = Astro.props;
+const { title, description, intro } = Astro.props;
 ---
 
 <!doctype html>
@@ -16,15 +23,12 @@ const { title, description } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     <meta name="generator" content={Astro.generator} />
   </head>
   <body>
-    <IntroAnimation />
+    {intro && <IntroAnimation heroSrc={intro.heroSrc} heroAlt={intro.heroAlt} title={intro.title} />}
     <slot />
   </body>
 </html>

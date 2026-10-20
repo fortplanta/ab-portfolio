@@ -3,14 +3,25 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import SiteNav from "@/components/nav/SiteNav.astro";
 import ProjectSection from "@/components/project/ProjectSection.astro";
 import { getAdapter } from "@/lib/content/adapter";
+import type { HeroSection } from "@/lib/content/types";
 
 const adapter = getAdapter();
 const projects = await adapter.getProjects();
+
+const firstHero = projects[0]?.sections.find((s): s is HeroSection => s.type === 'hero')
+const intro = firstHero
+  ? {
+      heroSrc: firstHero.media.src,
+      heroAlt: firstHero.media.alt,
+      title: firstHero.heading ?? projects[0].title,
+    }
+  : undefined
 ---
 
 <BaseLayout
   title="Portfolio"
   description="Selected client work — identity, web, campaign, and photography projects."
+  intro={intro}
 >
   <a
     href="#main-content"
