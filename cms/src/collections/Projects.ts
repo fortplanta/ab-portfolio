@@ -58,6 +58,20 @@ export const Projects: CollectionConfig = {
       admin: { description: 'Lower numbers appear first on the homepage' },
     },
     {
+      name: 'isFeatured',
+      type: 'checkbox',
+      defaultValue: true,
+      admin: { description: 'Show this project as a full scroll section on the homepage' },
+    },
+    {
+      name: 'thumbnail',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Optional: dedicated archive card thumbnail. Falls back to the first hero image.',
+      },
+    },
+    {
       name: 'sections',
       type: 'blocks',
       blocks: [HeroBlock, ImageBlock, VideoBlock, TextBlock, ImageGridBlock],

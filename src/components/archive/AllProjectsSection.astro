@@ -1,0 +1,32 @@
+---
+import ProjectCard from "./ProjectCard.astro";
+import type { Project } from "@/lib/content/types";
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+const published = projects.filter((p) => p.status === "published");
+---
+
+<section
+  id="all-projects"
+  data-project-slug="all-projects"
+  aria-label="All projects"
+  class="all-projects-section relative w-full min-h-[100vh] px-6 py-20 md:py-28 md:pr-12 md:pl-[260px]"
+>
+  <p class="mb-10 text-xs font-medium uppercase tracking-widest text-muted-foreground">
+    All projects
+  </p>
+  <div class="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+    {published.map((project) => <ProjectCard project={project} />)}
+  </div>
+</section>
+
+<style>
+  .all-projects-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+  }
+</style>

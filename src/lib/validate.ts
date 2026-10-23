@@ -87,6 +87,8 @@ const projectSchema = z.object({
   year: z.number().int().min(1900).max(2100),
   displayOrder: z.number().int(),
   status: z.enum(["draft", "published"]),
+  isFeatured: z.boolean(),
+  thumbnail: mediaRefSchema.optional(),
   sections: z.array(sectionSchema).min(1),
 });
 

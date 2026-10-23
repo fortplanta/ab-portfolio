@@ -1,0 +1,222 @@
+---
+import { getAdapter } from "@/lib/content/adapter";
+import type { HeroSection, Project } from "@/lib/content/types";
+import { getProjectThumbnail } from "@/lib/content/types";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import SectionRenderer from "@/components/project/SectionRenderer.astro";
+
+export async function getStaticPaths() {
+  const adapter = getAdapter();
+  const projects = await adapter.getProjects();
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project, allProjects: projects },
+  }));
+}
+
+interface Props {
+  project: Project;
+  allProjects: Project[];
+}
+
+const { project, allProjects } = Astro.props;
+
+const sorted = [...allProjects].sort((a, b) => a.displayOrder - b.displayOrder);
+const idx = sorted.findIndex((p) => p.slug === project.slug);
+const prevProject = idx > 0 ? sorted[idx - 1] : null;
+const nextProject = idx < sorted.length - 1 ? sorted[idx + 1] : null;
+const prevThumb = prevProject ? getProjectThumbnail(prevProject) : null;
+const nextThumb = nextProject ? getProjectThumbnail(nextProject) : null;
+
+const heroSection = project.sections.find((s): s is HeroSection => s.type === "hero");
+const nonHeroSections = project.sections.filter((s) => s.type !== "hero");
+---
+
+<BaseLayout
+  title={`${project.client} — ${project.title}`}
+  description={project.shortDescription}
+>
+  <!-- Mobile top bar -->
+  <div
+    class="sticky top-0 z-50 flex items-center gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur-sm lg:hidden"
+  >
+    <a
+      href="/#all-projects"
+      class="shrink-0 text-sm text-muted-foreground transition-colors hover:text-foreground"
+    >
+      ← All projects
+    </a>
+    <span class="text-muted-foreground/40" aria-hidden="true">·</span>
+    <span class="min-w-0 truncate text-sm">{project.client}</span>
+  </div>
+
+  <!-- Page grid: 3 columns on desktop, single column on mobile -->
+  <div class="lg:grid lg:grid-cols-[200px_1fr_160px]">
+    <!-- Hero: full bleed, spans all 3 columns on desktop -->
+    {
+      heroSection && (
+        <div class="relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden lg:col-span-3">
+          <img
+            src={heroSection.media.src}
+            alt={heroSection.media.alt}
+            width={heroSection.media.width}
+            height={heroSection.media.height}
+            loading="eager"
+            fetchpriority="high"
+            class="absolute inset-0 h-full w-full object-cover"
+            transition:name={`project-hero-${project.slug}`}
+          />
+          <div class="absolute inset-0 bg-black/20" aria-hidden="true" />
+          {heroSection.heading && (
+            <h1 class="relative z-10 px-6 text-center text-4xl font-semibold tracking-tight text-white md:text-6xl">
+              {heroSection.heading}
+            </h1>
+          )}
+        </div>
+      )
+    }
+
+    <!-- Left sidebar: desktop only, sticky info rail -->
+    <aside class="hidden lg:block">
+      <div class="sticky top-0 flex h-screen flex-col justify-between overflow-y-auto p-8">
+        <a
+          href="/#all-projects"
+          class="text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          ← All projects
+        </a>
+        <dl class="space-y-5 text-sm">
+          <div>
+            <dt class="mb-0.5 text-[10px] uppercase tracking-widest text-muted-foreground">
+              Client
+            </dt>
+            <dd>{project.client}</dd>
+          </div>
+          <div>
+            <dt class="mb-0.5 text-[10px] uppercase tracking-widest text-muted-foreground">
+              Year
+            </dt>
+            <dd>{project.year}</dd>
+          </div>
+          <div>
+            <dt class="mb-0.5 text-[10px] uppercase tracking-widest text-muted-foreground">
+              Role
+            </dt>
+            {project.role.map((r) => <dd>{r}</dd>)}
+          </div>
+        </dl>
+      </div>
+    </aside>
+
+    <!-- Sections: center column -->
+    <main class="min-w-0">
+      {
+        nonHeroSections.map((section) => (
+          <SectionRenderer section={section} isFirstHero={false} />
+        ))
+      }
+
+      <!-- Mobile: metadata block after sections -->
+      <div class="border-t border-border px-6 py-10 lg:hidden">
+        <dl class="space-y-4 text-sm">
+          <div>
+            <dt class="mb-0.5 text-[10px] uppercase tracking-widest text-muted-foreground">
+              Client
+            </dt>
+            <dd>{project.client}</dd>
+          </div>
+          <div>
+            <dt class="mb-0.5 text-[10px] uppercase tracking-widest text-muted-foreground">
+              Year
+            </dt>
+            <dd>{project.year}</dd>
+          </div>
+          <div>
+            <dt class="mb-0.5 text-[10px] uppercase tracking-widest text-muted-foreground">
+              Role
+            </dt>
+            {project.role.map((r) => <dd>{r}</dd>)}
+          </div>
+        </dl>
+      </div>
+    </main>
+
+    <!-- Right sidebar: sibling nav -->
+    <aside>
+      <!-- Desktop: sticky strip with thumbnail-sized references -->
+      <div
+        class="sticky top-0 hidden h-screen flex-col items-start justify-center gap-6 overflow-y-auto p-5 lg:flex"
+      >
+        {
+          prevProject && (
+            <a href={`/projects/${prevProject.slug}/`} class="group block w-full">
+              <p class="mb-2 text-[10px] uppercase tracking-widest text-muted-foreground">Prev</p>
+              {prevThumb && (
+                <div class="aspect-video w-full overflow-hidden bg-muted">
+                  <img
+                    src={prevThumb.src}
+                    alt={prevThumb.alt}
+                    loading="lazy"
+                    class="h-full w-full object-cover opacity-50 transition-opacity duration-300 group-hover:opacity-100"
+                  />
+                </div>
+              )}
+              <p class="mt-1.5 text-xs leading-snug">{prevProject.title}</p>
+            </a>
+          )
+        }
+        {
+          nextProject && (
+            <a href={`/projects/${nextProject.slug}/`} class="group block w-full">
+              <p class="mb-2 text-[10px] uppercase tracking-widest text-muted-foreground">Next</p>
+              {nextThumb && (
+                <div class="aspect-video w-full overflow-hidden bg-muted">
+                  <img
+                    src={nextThumb.src}
+                    alt={nextThumb.alt}
+                    loading="lazy"
+                    class="h-full w-full object-cover opacity-50 transition-opacity duration-300 group-hover:opacity-100"
+                  />
+                </div>
+              )}
+              <p class="mt-1.5 text-xs leading-snug">{nextProject.title}</p>
+            </a>
+          )
+        }
+      </div>
+
+      <!-- Mobile: sibling nav at page bottom -->
+      <nav
+        class="flex items-start justify-between border-t border-border px-6 py-8 lg:hidden"
+        aria-label="Adjacent projects"
+      >
+        {
+          prevProject ? (
+            <a
+              href={`/projects/${prevProject.slug}/`}
+              class="flex flex-col gap-1 text-left"
+            >
+              <span class="text-[10px] uppercase tracking-widest text-muted-foreground">← Prev</span>
+              <span class="text-sm">{prevProject.title}</span>
+            </a>
+          ) : (
+            <div />
+          )
+        }
+        {
+          nextProject ? (
+            <a
+              href={`/projects/${nextProject.slug}/`}
+              class="flex flex-col items-end gap-1 text-right"
+            >
+              <span class="text-[10px] uppercase tracking-widest text-muted-foreground">Next →</span>
+              <span class="text-sm">{nextProject.title}</span>
+            </a>
+          ) : (
+            <div />
+          )
+        }
+      </nav>
+    </aside>
+  </div>
+</BaseLayout>

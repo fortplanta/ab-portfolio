@@ -6,8 +6,12 @@
  * is monotonic in scroll position (unlike "largest visible %"), which is
  * what keeps it correct across wildly different project heights.
  *
- * See /Users/anton/.claude/plans/federated-wondering-sifakis.md for the
- * full design rationale.
+ * Queries [data-project-slug] so the archive section (#all-projects) is
+ * tracked alongside project sections without needing the project-section class.
+ *
+ * Uses AbortController cleanup so re-initialisation on every astro:page-load
+ * event (required for Astro View Transitions) doesn't accumulate duplicate
+ * listeners or observers.
  */
 
 const ACTIVE_LINE_BUFFER_PX = 24;
@@ -22,13 +26,22 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+let abortController: AbortController | undefined;
+
 function init() {
+  // Clean up any previous initialisation (handles astro:page-load re-fires).
+  abortController?.abort();
+  abortController = undefined;
+
   const navEl = document.getElementById("site-nav");
-  const projectEls = Array.from(document.querySelectorAll<HTMLElement>(".project-section"));
+  const projectEls = Array.from(document.querySelectorAll<HTMLElement>("[data-project-slug]"));
   const navLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>("[data-nav-link]"));
   const sectionEls = Array.from(document.querySelectorAll<HTMLElement>("[data-section-id]"));
 
   if (!navEl || projectEls.length === 0) return;
+
+  abortController = new AbortController();
+  const signal = abortController.signal;
 
   let activeLinePx = ACTIVE_LINE_BUFFER_PX;
   let viewportHeight = window.innerHeight;
@@ -39,6 +52,11 @@ function init() {
   let projectObserver: IntersectionObserver | undefined;
   let sectionObserver: IntersectionObserver | undefined;
   let currentActiveSlug: string | undefined;
+
+  signal.addEventListener("abort", () => {
+    projectObserver?.disconnect();
+    sectionObserver?.disconnect();
+  });
 
   /** Nav's own occlusion of the viewport's top edge, however it's currently laid out. */
   function getNavOcclusionPx(): number {
@@ -123,12 +141,6 @@ function init() {
     viewportHeight = window.innerHeight;
     const navOcclusion = getNavOcclusionPx();
     activeLinePx = navOcclusion + ACTIVE_LINE_BUFFER_PX;
-    // Keeps native CSS scroll-snap's landing position in agreement with
-    // scrollToProject()'s own nav-occlusion-aware target. Without this,
-    // snapping lands a project's raw top at scrollY=0 (under the nav) while
-    // clicking a nav link lands it just below the nav — two different
-    // "resting" positions for the same project, which is what made snap
-    // feel inconsistent with ordinary scrolling.
     document.documentElement.style.scrollPaddingTop = `${navOcclusion}px`;
     buildObservers();
     recomputeFromRects();
@@ -137,10 +149,14 @@ function init() {
   // --- Resize / layout-shift handling -------------------------------------
 
   let resizeTimer: number | undefined;
-  window.addEventListener("resize", () => {
-    window.clearTimeout(resizeTimer);
-    resizeTimer = window.setTimeout(recomputeActiveLine, 150);
-  });
+  window.addEventListener(
+    "resize",
+    () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(recomputeActiveLine, 150);
+    },
+    { signal },
+  );
 
   let resizeObserverFrame: number | undefined;
   const bodyResizeObserver = new ResizeObserver(() => {
@@ -151,20 +167,10 @@ function init() {
     });
   });
   bodyResizeObserver.observe(document.body);
+  signal.addEventListener("abort", () => bodyResizeObserver.disconnect());
 
   // --- Click-to-navigate ---------------------------------------------------
 
-  /**
-   * No custom "is the scroll done yet" bookkeeping here: the passive-scroll
-   * IntersectionObserver set up in buildObservers() is already watching
-   * every project boundary continuously, so it naturally tracks aria-current
-   * and the URL through a native smooth-scroll animation exactly as it
-   * would through an ordinary wheel scroll, and converges on the right
-   * project the moment the animation actually settles — whatever its real
-   * duration turns out to be. Trying to out-guess that with our own
-   * arrival/stability heuristics only reintroduces bugs a plain IO callback
-   * already avoids.
-   */
   function scrollToProject(
     targetEl: HTMLElement,
     slug: string,
@@ -183,35 +189,38 @@ function init() {
     window.scrollTo({ top: targetY, behavior: instant ? "auto" : "smooth" });
   }
 
-  navEl.addEventListener("click", (event) => {
-    const target = event.target as Element;
-    const link = target.closest<HTMLAnchorElement>("a[data-nav-link]");
-    if (!link) return;
-    const slug = link.dataset.slug;
-    if (!slug) return;
-    const targetEl = document.getElementById(slug);
-    if (!targetEl) return;
+  navEl.addEventListener(
+    "click",
+    (event) => {
+      const target = event.target as Element;
+      const link = target.closest<HTMLAnchorElement>("a[data-nav-link]");
+      if (!link) return;
+      const slug = link.dataset.slug;
+      if (!slug) return;
+      const targetEl = document.getElementById(slug);
+      if (!targetEl) return;
 
-    event.preventDefault();
-    // event.detail === 0 reliably indicates a keyboard/synthetic activation
-    // (Enter/Space on a focused link) rather than a real mouse click; the
-    // brief requires keyboard-triggered navigation to be immediate.
-    const isKeyboardActivation = (event as MouseEvent).detail === 0;
-    scrollToProject(targetEl, slug, { updateHistory: "push", instant: isKeyboardActivation });
-  });
+      event.preventDefault();
+      const isKeyboardActivation = (event as MouseEvent).detail === 0;
+      scrollToProject(targetEl, slug, { updateHistory: "push", instant: isKeyboardActivation });
+    },
+    { signal },
+  );
 
-  // `history.scrollRestoration = "manual"` (set below) stops the browser
-  // from auto-scrolling on back/forward, so we have to do it ourselves. An
-  // empty hash means "back to the un-hashed root", which defaults to the
-  // first project — same as a fresh, hash-less initial load.
-  window.addEventListener("popstate", () => {
-    const slug = location.hash.slice(1);
-    const targetEl = slug ? document.getElementById(slug) : projectEls[0];
-    const targetSlug = slug || projectEls[0].dataset.projectSlug!;
-    if (targetEl && targetEl.classList.contains("project-section")) {
-      scrollToProject(targetEl, targetSlug, { updateHistory: "none", instant: true });
-    }
-  });
+  window.addEventListener(
+    "popstate",
+    () => {
+      const slug = location.hash.slice(1);
+      const targetEl = slug ? document.getElementById(slug) : projectEls[0];
+      const targetSlug = slug || projectEls[0].dataset.projectSlug!;
+      // Use dataset.projectSlug presence instead of class check so the archive
+      // section (#all-projects) participates in back/forward navigation too.
+      if (targetEl && "projectSlug" in targetEl.dataset) {
+        scrollToProject(targetEl, targetSlug, { updateHistory: "none", instant: true });
+      }
+    },
+    { signal },
+  );
 
   // --- Initial state ---------------------------------------------------
 
@@ -219,7 +228,7 @@ function init() {
 
   const initialSlug = location.hash.slice(1);
   const initialTarget = initialSlug ? document.getElementById(initialSlug) : null;
-  if (initialTarget && initialTarget.classList.contains("project-section")) {
+  if (initialTarget && "projectSlug" in initialTarget.dataset) {
     scrollToProject(initialTarget, initialSlug, { updateHistory: "none", instant: true });
   }
 }
@@ -228,8 +237,15 @@ if ("scrollRestoration" in history) {
   history.scrollRestoration = "manual";
 }
 
+// astro:page-load fires on every navigation (initial load + View Transitions).
+// The AbortController inside init() cleans up the previous run's listeners
+// and observers before setting up new ones.
+document.addEventListener("astro:page-load", init);
+
+// Fallback for environments without View Transitions (astro:page-load might
+// still fire, but this ensures we initialise even if it doesn't).
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", init);
+  document.addEventListener("DOMContentLoaded", init, { once: true });
 } else {
   init();
 }

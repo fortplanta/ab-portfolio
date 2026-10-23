@@ -106,6 +106,8 @@ function mapPayloadDocToProject(doc: any): Project {
     year: doc.year,
     displayOrder: doc.displayOrder,
     status: doc._status === "published" ? "published" : "draft",
+    isFeatured: Boolean(doc.isFeatured ?? true),
+    thumbnail: doc.thumbnail ? mapMedia(doc.thumbnail) : undefined,
     sections: (doc.sections ?? []).map(mapSectionBlock),
   };
 }

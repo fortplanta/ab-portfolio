@@ -84,5 +84,14 @@ export interface Project {
   year: number;
   displayOrder: number;
   status: PublicationStatus;
+  isFeatured: boolean;
+  thumbnail?: MediaRef;
   sections: Section[];
+}
+
+/** Returns the first usable thumbnail for a project: explicit thumbnail field, then first hero image. */
+export function getProjectThumbnail(project: Project): MediaRef | null {
+  if (project.thumbnail) return project.thumbnail;
+  const hero = project.sections.find((s): s is HeroSection => s.type === "hero");
+  return hero?.media ?? null;
 }
