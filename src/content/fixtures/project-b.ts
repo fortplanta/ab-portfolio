@@ -11,6 +11,7 @@ export const projectB: Project = {
   year: 2025,
   displayOrder: 2,
   status: "published",
+  isFeatured: true,
   sections: [
     {
       id: "project-b-hero",

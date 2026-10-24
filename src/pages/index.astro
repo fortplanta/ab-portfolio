@@ -2,20 +2,22 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import SiteNav from "@/components/nav/SiteNav.astro";
 import ProjectSection from "@/components/project/ProjectSection.astro";
+import AllProjectsSection from "@/components/archive/AllProjectsSection.astro";
 import { getAdapter } from "@/lib/content/adapter";
 import type { HeroSection } from "@/lib/content/types";
 
 const adapter = getAdapter();
-const projects = await adapter.getProjects();
+const allProjects = await adapter.getProjects();
+const featured = allProjects.filter((p) => p.isFeatured);
 
-const firstHero = projects[0]?.sections.find((s): s is HeroSection => s.type === 'hero')
+const firstHero = featured[0]?.sections.find((s): s is HeroSection => s.type === "hero");
 const intro = firstHero
   ? {
       heroSrc: firstHero.media.src,
       heroAlt: firstHero.media.alt,
-      title: firstHero.heading ?? projects[0].title,
+      title: firstHero.heading ?? featured[0].title,
     }
-  : undefined
+  : undefined;
 ---
 
 <BaseLayout
@@ -29,12 +31,13 @@ const intro = firstHero
   >
     Skip to content
   </a>
-  <SiteNav projects={projects} />
+  <SiteNav projects={featured} />
   <main id="main-content">
     {
-      projects.map((project, index) => (
+      featured.map((project, index) => (
         <ProjectSection project={project} isFirstProject={index === 0} />
       ))
     }
+    <AllProjectsSection projects={allProjects} />
   </main>
 </BaseLayout>

@@ -1,0 +1,54 @@
+---
+import { getProjectThumbnail } from "@/lib/content/types";
+import type { Project } from "@/lib/content/types";
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const thumbnail = getProjectThumbnail(project);
+---
+
+<article>
+  <a
+    href={`/projects/${project.slug}/`}
+    class="group block"
+    data-archive-card
+    data-card-slug={project.slug}
+  >
+    <div class="mb-4 aspect-square overflow-hidden bg-muted flex items-center justify-center p-8">
+      {
+        thumbnail && (
+          <img
+            src={thumbnail.src}
+            alt={thumbnail.alt}
+            width={thumbnail.width}
+            height={thumbnail.height}
+            loading="lazy"
+            class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+            transition:name={`project-hero-${project.slug}`}
+          />
+        )
+      }
+    </div>
+    <div class="space-y-1">
+      <p class="text-[11px] uppercase tracking-widest text-muted-foreground">{project.client}</p>
+      <h3 class="text-sm font-medium leading-snug">{project.title}</h3>
+      <p class="text-[11px] text-muted-foreground">
+        {project.year}&ensp;—&ensp;{project.role.join(", ")}
+      </p>
+    </div>
+  </a>
+</article>
+
+<script>
+  document.querySelectorAll<HTMLAnchorElement>("[data-archive-card]").forEach((card) => {
+    card.addEventListener("click", () => {
+      try {
+        sessionStorage.setItem("archiveScrollY", String(window.scrollY));
+        sessionStorage.setItem("archiveReturnSlug", card.dataset.cardSlug ?? "");
+      } catch {}
+    });
+  });
+</script>

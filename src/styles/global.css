@@ -79,6 +79,12 @@ html {
   transition-duration: 100ms;
 }
 
+/* View Transitions: root fade + named hero morph */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-snap-type: none;

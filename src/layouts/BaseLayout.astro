@@ -1,5 +1,6 @@
 ---
 import "@/styles/global.css";
+import ClientRouter from "astro/components/ClientRouter.astro";
 import IntroAnimation from "@/components/intro/IntroAnimation.astro";
 
 interface IntroProps {
@@ -26,6 +27,7 @@ const { title, description, intro } = Astro.props;
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     <meta name="generator" content={Astro.generator} />
+    <ClientRouter />
   </head>
   <body>
     {intro && <IntroAnimation heroSrc={intro.heroSrc} heroAlt={intro.heroAlt} title={intro.title} />}
@@ -34,7 +36,43 @@ const { title, description, intro } = Astro.props;
 </html>
 
 <script>
+  // Keep manual scroll restoration so ActiveNavController owns scroll on the homepage.
+  // Runs once; the setting persists across View Transitions navigations.
   if ("scrollRestoration" in history) {
     history.scrollRestoration = "manual";
   }
+
+  // After DOM swap (before transition animation), remove intro overlay if already played.
+  // Without this, navigating back to the homepage re-adds the overlay element in its
+  // default CSS state (photos piled at top:50% left:50%), covering the entire page.
+  document.addEventListener("astro:after-swap", () => {
+    try {
+      if (sessionStorage.getItem("intro-played-v1")) {
+        const overlay = document.getElementById("intro-overlay");
+        if (overlay) {
+          overlay.remove();
+          document.body.classList.remove("is-loading");
+        }
+      }
+    } catch {}
+  });
+
+  // Restore archive grid scroll position when the user navigates back via the
+  // "← All projects" link (as opposed to the browser Back button, which Astro
+  // View Transitions handles automatically via its own history state).
+  document.addEventListener("astro:page-load", () => {
+    try {
+      const savedY = sessionStorage.getItem("archiveScrollY");
+      if (savedY && location.hash === "#all-projects") {
+        const y = parseInt(savedY, 10);
+        sessionStorage.removeItem("archiveScrollY");
+        // Double rAF: wait for View Transitions animation + layout to settle.
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            window.scrollTo({ top: y, behavior: "instant" });
+          }),
+        );
+      }
+    } catch {}
+  });
 </script>
