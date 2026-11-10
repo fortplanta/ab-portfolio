@@ -11,6 +11,15 @@ export const VideoBlock: Block = {
     navContrastField,
     layoutField,
     {
+      name: 'showControls',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description:
+          'Off (default): video autoplays looped and muted — ambient / atmospheric. On: standard video player with controls and audio.',
+      },
+    },
+    {
       name: 'media',
       type: 'upload',
       relationTo: 'media',
@@ -20,8 +29,7 @@ export const VideoBlock: Block = {
       name: 'poster',
       type: 'upload',
       relationTo: 'media',
-      required: true,
-      admin: { description: 'Still image shown before the video plays' },
+      admin: { description: 'Still image shown before the video plays (required when controls are on)' },
     },
     { name: 'caption', type: 'text' },
   ],

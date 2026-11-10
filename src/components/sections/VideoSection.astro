@@ -7,26 +7,68 @@ interface Props {
 
 const { section } = Astro.props;
 const bodyParagraphs = section.body?.split("\n\n") ?? [];
+const showControls = section.showControls ?? false;
+const fullBleed = section.isFullScreen && !showControls;
 ---
 
-<figure class="mx-auto max-w-5xl">
-  {section.heading && <h2 class="mb-6 text-2xl font-semibold tracking-tight">{section.heading}</h2>}
+{fullBleed ? (
   <video
     width={section.media.width}
     height={section.media.height}
-    poster={section.media.poster.src}
-    controls
-    preload="none"
-    class="w-full object-cover"
-    style={`aspect-ratio: ${section.media.width} / ${section.media.height};`}
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="auto"
+    class="absolute inset-0 h-full w-full object-cover"
+    aria-label={section.media.alt}
   >
     {section.mobileMedia && (
       <source src={section.mobileMedia.src} media="(max-width: 767px)" />
     )}
     <source src={section.media.src} />
   </video>
-  {section.caption && <figcaption class="mt-3 text-sm text-muted-foreground">{section.caption}</figcaption>}
-  {bodyParagraphs.map((paragraph) => (
-    <p class="mt-6 max-w-prose text-base leading-relaxed text-foreground/90">{paragraph}</p>
-  ))}
-</figure>
+) : (
+  <figure class="mx-auto max-w-5xl w-full">
+    {section.heading && <h2 class="mb-6 text-2xl font-semibold tracking-tight">{section.heading}</h2>}
+
+    {showControls ? (
+      <video
+        width={section.media.width}
+        height={section.media.height}
+        poster={section.media.poster?.src}
+        controls
+        preload="none"
+        class="w-full object-cover"
+        style={`aspect-ratio: ${section.media.width} / ${section.media.height};`}
+      >
+        {section.mobileMedia && (
+          <source src={section.mobileMedia.src} media="(max-width: 767px)" />
+        )}
+        <source src={section.media.src} />
+      </video>
+    ) : (
+      <video
+        width={section.media.width}
+        height={section.media.height}
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+        class="w-full object-cover"
+        style={`aspect-ratio: ${section.media.width} / ${section.media.height};`}
+      >
+        {section.mobileMedia && (
+          <source src={section.mobileMedia.src} media="(max-width: 767px)" />
+        )}
+        <source src={section.media.src} />
+      </video>
+    )}
+
+    {section.caption && <figcaption class="mt-3 text-sm text-muted-foreground">{section.caption}</figcaption>}
+    {bodyParagraphs.map((paragraph) => (
+      <p class="mt-6 max-w-prose text-base leading-relaxed text-foreground/90">{paragraph}</p>
+    ))}
+  </figure>
+)}

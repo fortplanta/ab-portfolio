@@ -16,7 +16,7 @@ const mediaRefSchema = z.object({
 });
 
 const videoMediaRefSchema = mediaRefSchema.extend({
-  poster: mediaRefSchema,
+  poster: mediaRefSchema.optional(),
 });
 
 const sectionLayoutSchema = z.enum(["default", "split", "centered", "full-bleed"]);
@@ -48,6 +48,7 @@ const videoSectionSchema = sectionBaseSchema.extend({
   media: videoMediaRefSchema,
   mobileMedia: videoMediaRefSchema.optional(),
   caption: z.string().optional(),
+  showControls: z.boolean().optional(),
 });
 
 const textSectionSchema = sectionBaseSchema.extend({

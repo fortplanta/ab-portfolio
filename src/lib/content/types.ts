@@ -19,7 +19,7 @@ export interface MediaRef {
 }
 
 export interface VideoMediaRef extends MediaRef {
-  poster: MediaRef;
+  poster?: MediaRef;
 }
 
 export type SectionLayout = "default" | "split" | "centered" | "full-bleed";
@@ -51,6 +51,7 @@ export interface VideoSection extends SectionBase {
   media: VideoMediaRef;
   mobileMedia?: VideoMediaRef;
   caption?: string;
+  showControls?: boolean;
 }
 
 export interface TextSection extends SectionBase {

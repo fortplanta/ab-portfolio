@@ -45,10 +45,10 @@ function mapMedia(doc: PayloadMediaDoc, fit?: ImageFit, focalPoint?: FocalPoint)
   };
 }
 
-function mapVideoMedia(doc: PayloadMediaDoc, posterDoc: PayloadMediaDoc): VideoMediaRef {
+function mapVideoMedia(doc: PayloadMediaDoc, posterDoc?: PayloadMediaDoc): VideoMediaRef {
   return {
     ...mapMedia(doc),
-    poster: mapMedia(posterDoc),
+    poster: posterDoc ? mapMedia(posterDoc) : undefined,
   };
 }
 
@@ -76,8 +76,9 @@ function mapSectionBlock(block: any): Section {
       return {
         ...base,
         type: "video",
-        media: mapVideoMedia(block.media, block.poster),
+        media: mapVideoMedia(block.media, block.poster ?? undefined),
         caption: block.caption || undefined,
+        showControls: Boolean(block.showControls),
       };
     case "text":
       return { ...base, type: "text" };
