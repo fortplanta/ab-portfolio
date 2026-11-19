@@ -4,7 +4,7 @@ export const project4dBygg: Project = {
   id: "fixture-project-4d-bygg",
   slug: "4d-bygg",
   client: "4D Bygg",
-  title: "4D Bygg",
+  title: "Growth in every dimension",
   shortDescription:
     "A modular visual identity for 4D Bygg — stencil-cut logotype, a pattern built from the same geometric modules, and the stationery and motion that carry it.",
   role: ["Brand Identity", "Motion"],
@@ -24,7 +24,7 @@ export const project4dBygg: Project = {
       type: "hero",
       isFullScreen: true,
       navContrast: "dark",
-      heading: "4D Bygg",
+      heading: "Growth in every dimension",
       highlights: ["Nominated for Svenska Designpriset"],
       media: {
         src: "/4d-bygg/stationery.jpg",
