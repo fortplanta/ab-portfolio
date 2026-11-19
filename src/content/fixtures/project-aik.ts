@@ -166,5 +166,41 @@ export const projectAik: Project = {
         height: 1080,
       },
     },
+    {
+      id: "aik-trophy",
+      type: "image",
+      isFullScreen: true,
+      navContrast: "dark",
+      media: {
+        src: "/aik/golden-fuel-trophy.jpg",
+        alt: "The golden jerry can trophy on a black plinth in a dark studio",
+        width: 2000,
+        height: 1125,
+      },
+    },
+    {
+      id: "aik-website-laptop",
+      type: "image",
+      isFullScreen: false,
+      navContrast: "light",
+      media: {
+        src: "/aik/website-laptop.jpg",
+        alt: "Person using a laptop showing the Golden Fuel Awards website with the nominated entries",
+        width: 2000,
+        height: 1337,
+      },
+    },
+    {
+      id: "aik-website-mobile",
+      type: "image",
+      isFullScreen: false,
+      navContrast: "light",
+      media: {
+        src: "/aik/website-mobile.jpg",
+        alt: "Phone on a desk showing the nominated entries on the Golden Fuel Awards website",
+        width: 2000,
+        height: 1292,
+      },
+    },
   ],
 };
