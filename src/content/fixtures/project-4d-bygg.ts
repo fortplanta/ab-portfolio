@@ -1,0 +1,123 @@
+import type { Project } from "@/lib/content/types";
+
+export const project4dBygg: Project = {
+  id: "fixture-project-4d-bygg",
+  slug: "4d-bygg",
+  client: "4D Bygg",
+  title: "Visual Identity",
+  shortDescription:
+    "A modular visual identity for 4D Bygg — stencil-cut logotype, a pattern built from the same geometric modules, and the stationery and motion that carry it.",
+  role: ["Brand Identity", "Motion"],
+  year: 2021,
+  displayOrder: 5,
+  status: "published",
+  isFeatured: false,
+  thumbnail: {
+    src: "/4d-bygg/logo-orange.gif",
+    alt: "4D Bygg animated logo module on an orange background",
+    width: 1400,
+    height: 1400,
+  },
+  sections: [
+    {
+      id: "4d-bygg-hero",
+      type: "hero",
+      isFullScreen: true,
+      navContrast: "dark",
+      heading: "4D Bygg",
+      media: {
+        src: "/4d-bygg/stationery.jpg",
+        alt: "4D Bygg stationery: notebook, folder, card and business card in beige, green and red",
+        width: 2000,
+        height: 1125,
+        fit: "cover",
+      },
+    },
+    {
+      id: "4d-bygg-logotyp-animation",
+      type: "video",
+      isFullScreen: true,
+      navContrast: "light",
+      showControls: false,
+      media: {
+        src: "/4d-bygg/logotyp-animation.mp4",
+        alt: "Animation of the 4D Bygg logotype assembling from modules",
+        width: 1920,
+        height: 1080,
+      },
+    },
+    {
+      id: "4d-bygg-logo-orange",
+      type: "image",
+      isFullScreen: false,
+      navContrast: "light",
+      media: {
+        src: "/4d-bygg/logo-orange.gif",
+        alt: "Animated logo module on an orange background",
+        width: 1400,
+        height: 1400,
+      },
+    },
+    {
+      id: "4d-bygg-logo-green",
+      type: "image",
+      isFullScreen: false,
+      navContrast: "light",
+      media: {
+        src: "/4d-bygg/logo-green.webp",
+        alt: "Animated logo module on a sage green background",
+        width: 1400,
+        height: 1400,
+      },
+    },
+    {
+      id: "4d-bygg-van",
+      type: "image",
+      isFullScreen: false,
+      navContrast: "light",
+      media: {
+        src: "/4d-bygg/van.jpg",
+        alt: "Black van wrapped in the white 4D Bygg module pattern",
+        width: 2000,
+        height: 1452,
+      },
+    },
+    {
+      id: "4d-bygg-tshirt",
+      type: "image",
+      isFullScreen: false,
+      navContrast: "light",
+      media: {
+        src: "/4d-bygg/tshirt.jpg",
+        alt: "Black t-shirt with a small white smiley made from logo modules",
+        width: 2400,
+        height: 1800,
+      },
+    },
+    {
+      id: "4d-bygg-modul-animation",
+      type: "video",
+      isFullScreen: true,
+      navContrast: "light",
+      showControls: false,
+      media: {
+        src: "/4d-bygg/modul-animation.mp4",
+        alt: "Animation of the 4D Bygg module pattern shifting",
+        width: 1920,
+        height: 1080,
+      },
+    },
+    {
+      id: "4d-bygg-moodboard",
+      type: "image",
+      isFullScreen: false,
+      navContrast: "light",
+      media: {
+        src: "/4d-bygg/moodboard.jpg",
+        alt: "Flat-lay of objects in warm and cool tones: lamp, vases, art print, switches and wood",
+        width: 2000,
+        height: 1500,
+      },
+    },
+  ],
+};
