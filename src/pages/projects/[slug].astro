@@ -4,6 +4,7 @@ import type { HeroSection, Project } from "@/lib/content/types";
 import { getProjectThumbnail } from "@/lib/content/types";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import SectionRenderer from "@/components/project/SectionRenderer.astro";
+import HeroCaption from "@/components/sections/HeroCaption.astro";
 
 export async function getStaticPaths() {
   const adapter = getAdapter();
@@ -33,7 +34,7 @@ const nonHeroSections = project.sections.filter((s) => s.type !== "hero");
 ---
 
 <BaseLayout
-  title={`${project.client} — ${project.title}`}
+  title={project.client === project.title ? project.title : `${project.client} — ${project.title}`}
   description={project.shortDescription}
 >
   <!-- Mobile top bar -->
@@ -55,7 +56,7 @@ const nonHeroSections = project.sections.filter((s) => s.type !== "hero");
     <!-- Hero: full bleed, spans all 3 columns on desktop -->
     {
       heroSection && (
-        <div class="relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden lg:col-span-3">
+        <div class="relative min-h-[calc(100svh-49px)] w-full overflow-hidden lg:col-span-3 lg:min-h-[100svh]">
           <img
             src={heroSection.media.src}
             alt={heroSection.media.alt}
@@ -67,11 +68,12 @@ const nonHeroSections = project.sections.filter((s) => s.type !== "hero");
             transition:name={`project-hero-${project.slug}`}
           />
           <div class="absolute inset-0 bg-black/20" aria-hidden="true" />
-          {heroSection.heading && (
-            <h1 class="relative z-10 px-6 text-center text-4xl font-semibold tracking-tight text-white md:text-6xl">
-              {heroSection.heading}
-            </h1>
-          )}
+          <HeroCaption
+            as="h1"
+            client={project.client}
+            heading={heroSection.heading}
+            highlights={heroSection.highlights}
+          />
         </div>
       )
     }

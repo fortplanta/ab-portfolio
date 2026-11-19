@@ -1,0 +1,29 @@
+---
+interface Props {
+  client?: string;
+  heading?: string;
+  highlights?: string[];
+  as?: "h1" | "h2";
+}
+
+const { client, heading, highlights = [], as: Heading = "h2" } = Astro.props;
+const showClient = client && client.trim().toLowerCase() !== heading?.trim().toLowerCase();
+---
+
+{
+  (heading || highlights.length > 0) && (
+    <div class="hero-caption">
+      <div>
+        {showClient && <p class="hero-caption__client">{client}</p>}
+        {heading && <Heading class="hero-caption__title">{heading}</Heading>}
+      </div>
+      {highlights.length > 0 && (
+        <ul class="hero-caption__highlights">
+          {highlights.map((line) => (
+            <li>{line}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}

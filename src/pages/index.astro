@@ -16,6 +16,8 @@ const intro = firstHero
       heroSrc: firstHero.media.src,
       heroAlt: firstHero.media.alt,
       title: firstHero.heading ?? featured[0].title,
+      client: featured[0].client,
+      highlights: firstHero.highlights,
     }
   : undefined;
 ---

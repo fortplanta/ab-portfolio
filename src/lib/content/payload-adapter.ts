@@ -63,8 +63,17 @@ function mapSectionBlock(block: any): Section {
   } as const;
 
   switch (block.blockType) {
-    case "hero":
-      return { ...base, type: "hero", media: mapMedia(block.media) };
+    case "hero": {
+      const highlights = (block.highlights ?? [])
+        .map((h: { text?: string }) => h.text)
+        .filter(Boolean);
+      return {
+        ...base,
+        type: "hero",
+        media: mapMedia(block.media),
+        highlights: highlights.length > 0 ? highlights : undefined,
+      };
+    }
     case "image":
       return {
         ...base,

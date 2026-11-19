@@ -1,12 +1,14 @@
 ---
 import type { HeroSection as HeroSectionData } from "@/lib/content/types";
+import HeroCaption from "@/components/sections/HeroCaption.astro";
 
 interface Props {
   section: HeroSectionData;
   isFirstHero: boolean;
+  client?: string;
 }
 
-const { section, isFirstHero } = Astro.props;
+const { section, isFirstHero, client } = Astro.props;
 ---
 
 <picture>
@@ -22,10 +24,4 @@ const { section, isFirstHero } = Astro.props;
   />
 </picture>
 <div class="absolute inset-0 bg-black/20" aria-hidden="true"></div>
-{
-  section.heading && (
-    <h2 class="relative z-10 px-6 text-center text-4xl font-semibold tracking-tight text-white md:text-6xl">
-      {section.heading}
-    </h2>
-  )
-}
+<HeroCaption client={client} heading={section.heading} highlights={section.highlights} />

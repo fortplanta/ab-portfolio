@@ -10,6 +10,15 @@ export const HeroBlock: Block = {
     { name: 'isFullScreen', type: 'checkbox', defaultValue: true },
     navContrastField,
     layoutField,
+    {
+      name: 'highlights',
+      type: 'array',
+      labels: { singular: 'Highlight', plural: 'Highlights' },
+      admin: {
+        description: 'Notable info shown bottom-right on the cover, e.g. "Winner of Silverägget 2024"',
+      },
+      fields: [{ name: 'text', type: 'text', required: true }],
+    },
     { name: 'media', type: 'upload', relationTo: 'media', required: true },
     {
       name: 'mobileMedia',

@@ -22,8 +22,12 @@ export const projectAik: Project = {
       id: "aik-hero",
       type: "hero",
       isFullScreen: true,
-      navContrast: "dark",
+      navContrast: "light",
       heading: "Golden Fuel Awards",
+      highlights: [
+        "Winner of Silverägget 2024",
+        "Winner of Spinngalan: Influencer campaign of the year",
+      ],
       media: {
         src: "/aik/Stills/0135.jpg",
         alt: "AIK Golden Fuel Awards — still frame",

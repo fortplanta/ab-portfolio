@@ -19,7 +19,11 @@ const { project, isFirstProject } = Astro.props;
 >
   {
     project.sections.map((section, index) => (
-      <SectionRenderer section={section} isFirstHero={isFirstProject && index === 0} />
+      <SectionRenderer
+        section={section}
+        isFirstHero={isFirstProject && index === 0}
+        client={project.client}
+      />
     ))
   }
 </section>
