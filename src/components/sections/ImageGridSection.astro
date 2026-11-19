@@ -19,7 +19,7 @@ const { section } = Astro.props;
           width={item.media.width}
           height={item.media.height}
           loading="lazy"
-          class="w-full object-cover can-hover:transition-transform can-hover:duration-700 can-hover:ease-out can-hover:hover:scale-105"
+          class="w-full object-cover"
           style={`aspect-ratio: ${item.media.width} / ${item.media.height};`}
         />
         {item.caption && <figcaption class="mt-2 text-sm text-muted-foreground">{item.caption}</figcaption>}
