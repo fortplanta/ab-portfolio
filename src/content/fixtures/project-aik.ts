@@ -8,9 +8,9 @@ export const projectAik: Project = {
   shortDescription: "Film and motion for the AIK Golden Fuel Awards — a series of atmospheric macro shots in liquid gold.",
   role: ["Film", "Motion"],
   year: 2023,
-  displayOrder: 4,
+  displayOrder: 1,
   status: "published",
-  isFeatured: false,
+  isFeatured: true,
   thumbnail: {
     src: "/aik/Stills/0135.jpg",
     alt: "AIK Golden Fuel Awards — still frame",

@@ -6,11 +6,19 @@ import { projectB } from "@/content/fixtures/project-b";
 import { projectC } from "@/content/fixtures/project-c";
 import { projectAik } from "@/content/fixtures/project-aik";
 import { project4dBygg } from "@/content/fixtures/project-4d-bygg";
+import { projectMisc } from "@/content/fixtures/project-misc";
+import { projectTangent } from "@/content/fixtures/project-tangent";
 
 export function createFixtureAdapter(): ContentAdapter {
-  const all: Project[] = [projectA, projectB, projectC, projectAik, project4dBygg].map((p) =>
-    validateProject(p),
-  );
+  const all: Project[] = [
+    projectAik,
+    project4dBygg,
+    projectTangent,
+    projectMisc,
+    projectA,
+    projectB,
+    projectC,
+  ].map((p) => validateProject(p));
 
   return {
     async getProjects(opts: GetProjectsOptions = {}): Promise<Project[]> {

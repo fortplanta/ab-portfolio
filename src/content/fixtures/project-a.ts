@@ -9,9 +9,9 @@ export const projectA: Project = {
   shortDescription: "Five sections spanning a very short outro and a tall image grid.",
   role: ["Brand Identity", "Web Design", "Campaign"],
   year: 2026,
-  displayOrder: 1,
+  displayOrder: 5,
   status: "published",
-  isFeatured: true,
+  isFeatured: false,
   sections: [
     {
       id: "project-a-hero",

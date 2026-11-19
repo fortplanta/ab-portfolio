@@ -13,9 +13,9 @@ export const projectC: Project = {
   shortDescription: "A single, full-bleed project with exactly one section.",
   role: ["Art Direction"],
   year: 2026,
-  displayOrder: 3,
+  displayOrder: 7,
   status: "published",
-  isFeatured: true,
+  isFeatured: false,
   sections: [
     {
       id: "project-c-hero",

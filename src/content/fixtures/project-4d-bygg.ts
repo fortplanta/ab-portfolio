@@ -4,14 +4,14 @@ export const project4dBygg: Project = {
   id: "fixture-project-4d-bygg",
   slug: "4d-bygg",
   client: "4D Bygg",
-  title: "Visual Identity",
+  title: "4D Bygg",
   shortDescription:
     "A modular visual identity for 4D Bygg — stencil-cut logotype, a pattern built from the same geometric modules, and the stationery and motion that carry it.",
   role: ["Brand Identity", "Motion"],
   year: 2021,
-  displayOrder: 5,
+  displayOrder: 2,
   status: "published",
-  isFeatured: false,
+  isFeatured: true,
   thumbnail: {
     src: "/4d-bygg/logo-orange.gif",
     alt: "4D Bygg animated logo module on an orange background",
