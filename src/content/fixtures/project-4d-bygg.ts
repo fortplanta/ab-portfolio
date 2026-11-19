@@ -25,6 +25,7 @@ export const project4dBygg: Project = {
       isFullScreen: true,
       navContrast: "dark",
       heading: "4D Bygg",
+      highlights: ["Nominated for Svenska Designpriset"],
       media: {
         src: "/4d-bygg/stationery.jpg",
         alt: "4D Bygg stationery: notebook, folder, card and business card in beige, green and red",
