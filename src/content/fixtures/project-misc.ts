@@ -29,7 +29,7 @@ export const projectMisc: Project = {
     "A loose collection of motion experiments, posters and stills from various projects, in no particular order.",
   role: ["Motion", "Design"],
   year: 2024,
-  displayOrder: 6,
+  displayOrder: 4,
   status: "published",
   isFeatured: false,
   thumbnail: {

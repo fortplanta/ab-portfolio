@@ -9,9 +9,9 @@ export const projectB: Project = {
   shortDescription: "Three sections, the last one deliberately taller than one viewport.",
   role: ["Photography", "Direction"],
   year: 2025,
-  displayOrder: 2,
+  displayOrder: 6,
   status: "published",
-  isFeatured: true,
+  isFeatured: false,
   sections: [
     {
       id: "project-b-hero",
