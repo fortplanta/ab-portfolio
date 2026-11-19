@@ -128,14 +128,14 @@ export const projectAik: Project = {
       },
     },
     {
-      id: "aik-shot-07",
+      id: "aik-gfa-3d5",
       type: "video",
       isFullScreen: true,
       navContrast: "dark",
       showControls: false,
       media: {
-        src: "/aik/AIK_Shot_07.mp4",
-        alt: "AIK Golden Fuel — shot 07",
+        src: "/aik/AIK_GFA-3D5.mp4",
+        alt: "AIK Golden Fuel — 3D5",
         width: 1920,
         height: 1080,
       },
