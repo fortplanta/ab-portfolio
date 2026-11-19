@@ -1,27 +1,23 @@
 ---
+import type { IntroPoolItem } from '@/lib/content/intro-pool'
+
 interface Props {
   heroSrc: string
   heroAlt?: string
   title: string
   client?: string
   highlights?: string[]
+  pool?: IntroPoolItem[]
 }
 
-const { heroSrc, heroAlt = '', title, client, highlights = [] } = Astro.props
+const { heroSrc, heroAlt = '', title, client, highlights = [], pool = [] } = Astro.props
 const showClient = client && client.trim().toLowerCase() !== title.trim().toLowerCase()
 ---
 
 <div id="intro-overlay" aria-hidden="true">
+  <script type="application/json" id="intro-pool" is:inline set:html={JSON.stringify(pool)} />
   <section class="intro">
-    <div class="intro__images">
-      <img src="/intro/photo2.jpg" alt="" />
-      <img src="/intro/photo3.jpg" alt="" />
-      <img src="/intro/photo4.jpg" alt="" />
-      <img src="/intro/photo5.jpg" alt="" />
-      <img src="/intro/photo6.jpg" alt="" />
-      <img src="/intro/photo7.jpg" alt="" />
-      <img src="/intro/photo8.jpg" alt="" />
-    </div>
+    <div class="intro__images"></div>
 
     <div class="intro__center-image" data-hidden>
       <img src={heroSrc} alt={heroAlt} />
@@ -191,7 +187,51 @@ const showClient = client && client.trim().toLowerCase() !== title.trim().toLowe
   const centerImageWrapper = overlay.querySelector<HTMLElement>('.intro__center-image')!
   const centerImage = centerImageWrapper.querySelector<HTMLElement>('img')!
   const imagesWrapper = overlay.querySelector<HTMLElement>('.intro__images')!
-  const images = [...imagesWrapper.querySelectorAll<HTMLElement>('img')]
+
+  interface PoolItem {
+    src: string
+    alt: string
+    group: string
+    multi: boolean
+  }
+
+  const shuffle = <T,>(items: T[]) => {
+    for (let i = items.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[items[i], items[j]] = [items[j], items[i]]
+    }
+    return items
+  }
+
+  // One random image per project, then top up from collection projects (e.g. Misc).
+  function pickIntroImages(pool: PoolItem[], max: number): PoolItem[] {
+    const byProject = new Map<string, PoolItem[]>()
+    const collection: PoolItem[] = []
+    for (const item of pool) {
+      if (item.multi) {
+        collection.push(item)
+      } else {
+        byProject.set(item.group, [...(byProject.get(item.group) ?? []), item])
+      }
+    }
+    const singles = shuffle(
+      [...byProject.values()].map((items) => items[Math.floor(Math.random() * items.length)]),
+    ).slice(0, max)
+    return [...singles, ...shuffle(collection).slice(0, max - singles.length)]
+  }
+
+  let pool: PoolItem[] = []
+  try {
+    pool = JSON.parse(document.getElementById('intro-pool')?.textContent ?? '[]')
+  } catch {}
+
+  const images = shuffle(pickIntroImages(pool, 7)).map((item) => {
+    const img = document.createElement('img')
+    img.src = item.src
+    img.alt = ''
+    imagesWrapper.appendChild(img)
+    return img
+  })
   const textLines = '#intro-overlay [data-animation="text-reveal"] > *'
   const body = document.body
 

@@ -88,6 +88,8 @@ export interface Project {
   displayOrder: number;
   status: PublicationStatus;
   isFeatured: boolean;
+  /** A collection of unrelated works (e.g. Misc). May contribute several images to the intro preloader. */
+  isCollection?: boolean;
   thumbnail?: MediaRef;
   sections: Section[];
 }

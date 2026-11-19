@@ -32,6 +32,7 @@ export const projectMisc: Project = {
   displayOrder: 4,
   status: "published",
   isFeatured: false,
+  isCollection: true,
   thumbnail: {
     src: "/misc/biofibertech-billboard.webp",
     alt: "Billboard in a transit station showing a BioFiberTech campaign",
