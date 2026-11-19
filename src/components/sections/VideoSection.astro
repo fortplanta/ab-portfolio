@@ -16,11 +16,11 @@ const isPortrait = section.media.height > section.media.width;
   <video
     width={section.media.width}
     height={section.media.height}
-    autoplay
+    data-lazy-autoplay
     muted
     loop
     playsinline
-    preload="auto"
+    preload="metadata"
     class="absolute inset-0 h-full w-full object-cover"
     aria-label={section.media.alt}
   >
@@ -52,11 +52,11 @@ const isPortrait = section.media.height > section.media.width;
       <video
         width={section.media.width}
         height={section.media.height}
-        autoplay
+        data-lazy-autoplay
         muted
         loop
         playsinline
-        preload="auto"
+        preload="metadata"
         class="w-full object-cover"
         style={`aspect-ratio: ${section.media.width} / ${section.media.height};`}
       >
@@ -73,3 +73,27 @@ const isPortrait = section.media.height > section.media.width;
     ))}
   </figure>
 )}
+
+<script>
+  function initLazyAutoplay() {
+    const videos = document.querySelectorAll<HTMLVideoElement>("video[data-lazy-autoplay]");
+    if (videos.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const video = entry.target as HTMLVideoElement;
+          if (entry.isIntersecting) {
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
+        }
+      },
+      { rootMargin: "200px 0px", threshold: 0.01 },
+    );
+    videos.forEach((video) => observer.observe(video));
+  }
+
+  document.addEventListener("astro:page-load", initLazyAutoplay);
+</script>
