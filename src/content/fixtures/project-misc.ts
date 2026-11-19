@@ -60,7 +60,7 @@ export const projectMisc: Project = {
     video("misc-motion-poster-2", "motion-poster-2.mp4", "Motion poster 2", portrait),
     video("misc-ava-systems", "ava-systems-desktop.mp4", "Ava Systems desktop animation", landscape),
     video("misc-motion-poster-3", "motion-poster-3.mp4", "Motion poster 3", portrait),
-    video("misc-oppo-zoomin", "oppo-zoomin.mov", "OPPO zoom-in animation", landscape),
+    video("misc-oppo-zoomin", "oppo-zoomin.mp4", "OPPO zoom-in animation", landscape),
     video("misc-motion-poster-4", "motion-poster-4.mp4", "Motion poster 4", portrait),
   ],
 };
