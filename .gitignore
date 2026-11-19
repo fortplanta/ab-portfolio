@@ -28,3 +28,7 @@ pnpm-debug.log*
 
 # Local symlink to Dropbox video assets — not committed
 public/aik
+
+# Large local video assets for the Misc project — not committed
+public/misc/*.mp4
+public/misc/*.mov

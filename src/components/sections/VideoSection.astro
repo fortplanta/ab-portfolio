@@ -9,6 +9,7 @@ const { section } = Astro.props;
 const bodyParagraphs = section.body?.split("\n\n") ?? [];
 const showControls = section.showControls ?? false;
 const fullBleed = section.isFullScreen && !showControls;
+const isPortrait = section.media.height > section.media.width;
 ---
 
 {fullBleed ? (
@@ -29,7 +30,7 @@ const fullBleed = section.isFullScreen && !showControls;
     <source src={section.media.src} />
   </video>
 ) : (
-  <figure class="mx-auto max-w-5xl w-full">
+  <figure class:list={["mx-auto w-full", isPortrait ? "max-w-xl" : "max-w-5xl"]}>
     {section.heading && <h2 class="mb-6 text-2xl font-semibold tracking-tight">{section.heading}</h2>}
 
     {showControls ? (
