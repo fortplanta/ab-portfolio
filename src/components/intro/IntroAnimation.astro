@@ -220,45 +220,81 @@ const showClient = client && client.trim().toLowerCase() !== title.trim().toLowe
     return [...singles, ...shuffle(collection).slice(0, max - singles.length)]
   }
 
+  const LOAD_TIMEOUT_MS = 8000
+
+  // Resolves true once the image is fully fetched and decoded; false on error or timeout.
+  function loadImage(src: string): Promise<HTMLImageElement | null> {
+    return new Promise((resolve) => {
+      const img = new Image()
+      const timer = window.setTimeout(() => resolve(null), LOAD_TIMEOUT_MS)
+      img.alt = ''
+      img.decoding = 'async'
+      img.src = src
+      img.decode().then(
+        () => {
+          window.clearTimeout(timer)
+          resolve(img)
+        },
+        () => {
+          window.clearTimeout(timer)
+          resolve(null)
+        },
+      )
+    })
+  }
+
   let pool: PoolItem[] = []
   try {
     pool = JSON.parse(document.getElementById('intro-pool')?.textContent ?? '[]')
   } catch {}
 
-  const images = shuffle(pickIntroImages(pool, 7)).map((item) => {
-    const img = document.createElement('img')
-    img.src = item.src
-    img.alt = ''
-    imagesWrapper.appendChild(img)
-    return img
-  })
   const textLines = '#intro-overlay [data-animation="text-reveal"] > *'
   const body = document.body
 
-  // 1. Read the FLIP end-state before scattering.
-  gsap.set([...images, centerImageWrapper], { xPercent: -50, yPercent: -50 })
-  const flipState = Flip.getState([centerImageWrapper, ...images])
-
-  // 2. Apply scattered initial positions via CSS class + GSAP overrides.
-  centerImageWrapper.classList.add('initial')
-  imagesWrapper.classList.add('initial')
+  // Keep the page locked behind the dark overlay while assets load.
   body.classList.add('is-loading')
 
-  gsap.set(images, { xPercent: 0, yPercent: 0, y: 80 })
-  gsap.set(centerImageWrapper, { y: 80, scale: 0.15 })
-  gsap.set(centerImage, { scale: 1.5 })
+  async function init() {
+    const picked = shuffle(pickIntroImages(pool, 7))
+    const centerSrc = (centerImage as HTMLImageElement).currentSrc || (centerImage as HTMLImageElement).src
 
-  // 3. Fade all images up from below.
-  gsap.to([...images, centerImageWrapper], {
-    y: 0,
-    opacity: 1,
-    duration: 3,
-    ease: 'power3.inOut',
-    stagger: 0.1,
-    onComplete: moveToCenter,
-  })
+    // Wait for the centre image and every scattered image to be fully loaded,
+    // so nothing pops in or paints half-decoded once the animation starts.
+    const [, ...loaded] = await Promise.all([
+      loadImage(centerSrc),
+      ...picked.map((item) => loadImage(item.src)),
+    ])
+    const images = loaded.filter((img): img is HTMLImageElement => img !== null)
+    images.forEach((img) => imagesWrapper.appendChild(img))
 
-  function moveToCenter() {
+    start(images)
+  }
+
+  function start(images: HTMLImageElement[]) {
+    // 1. Read the FLIP end-state before scattering.
+    gsap.set([...images, centerImageWrapper], { xPercent: -50, yPercent: -50 })
+    const flipState = Flip.getState([centerImageWrapper, ...images])
+
+    // 2. Apply scattered initial positions via CSS class + GSAP overrides.
+    centerImageWrapper.classList.add('initial')
+    imagesWrapper.classList.add('initial')
+
+    gsap.set(images, { xPercent: 0, yPercent: 0, y: 80 })
+    gsap.set(centerImageWrapper, { y: 80, scale: 0.15 })
+    gsap.set(centerImage, { scale: 1.5 })
+
+    // 3. Fade all images up from below.
+    gsap.to([...images, centerImageWrapper], {
+      y: 0,
+      opacity: 1,
+      duration: 3,
+      ease: 'power3.inOut',
+      stagger: 0.1,
+      onComplete: () => moveToCenter(flipState),
+    })
+  }
+
+  function moveToCenter(flipState: ReturnType<typeof Flip.getState>) {
     Flip.to(flipState, {
       duration: 2,
       ease: 'expo.inOut',
@@ -293,4 +329,6 @@ const showClient = client && client.trim().toLowerCase() !== title.trim().toLowe
       onComplete: () => overlay.remove(),
     })
   }
+
+  init()
 </script>
