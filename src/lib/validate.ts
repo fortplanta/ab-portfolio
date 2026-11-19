@@ -90,6 +90,7 @@ const projectSchema = z.object({
   displayOrder: z.number().int(),
   status: z.enum(["draft", "published"]),
   isFeatured: z.boolean(),
+  isCollection: z.boolean().optional(),
   thumbnail: mediaRefSchema.optional(),
   sections: z.array(sectionSchema).min(1),
 });

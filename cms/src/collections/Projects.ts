@@ -64,6 +64,15 @@ export const Projects: CollectionConfig = {
       admin: { description: 'Show this project as a full scroll section on the homepage' },
     },
     {
+      name: 'isCollection',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description:
+          'Collection of works from multiple projects (e.g. Misc). May contribute several images to the intro preloader; every other project contributes at most one.',
+      },
+    },
+    {
       name: 'thumbnail',
       type: 'upload',
       relationTo: 'media',

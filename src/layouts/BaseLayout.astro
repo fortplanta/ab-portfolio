@@ -2,6 +2,7 @@
 import "@/styles/global.css";
 import ClientRouter from "astro/components/ClientRouter.astro";
 import IntroAnimation from "@/components/intro/IntroAnimation.astro";
+import type { IntroPoolItem } from "@/lib/content/intro-pool";
 
 interface IntroProps {
   heroSrc: string;
@@ -9,6 +10,7 @@ interface IntroProps {
   title: string;
   client?: string;
   highlights?: string[];
+  pool?: IntroPoolItem[];
 }
 
 interface Props {
@@ -40,6 +42,7 @@ const { title, description, intro } = Astro.props;
           title={intro.title}
           client={intro.client}
           highlights={intro.highlights}
+          pool={intro.pool}
         />
       )
     }
