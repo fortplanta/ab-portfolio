@@ -9,9 +9,10 @@ import ImageGridSection from "@/components/sections/ImageGridSection.astro";
 interface Props {
   section: Section;
   isFirstHero: boolean;
+  client?: string;
 }
 
-const { section, isFirstHero } = Astro.props;
+const { section, isFirstHero, client } = Astro.props;
 ---
 
 <div
@@ -25,7 +26,7 @@ const { section, isFirstHero } = Astro.props;
       : "px-6 py-20 md:px-12 md:py-28",
   ]}
 >
-  {section.type === "hero" && <HeroSection section={section} isFirstHero={isFirstHero} />}
+  {section.type === "hero" && <HeroSection section={section} isFirstHero={isFirstHero} client={client} />}
   {section.type === "image" && <ImageSection section={section} />}
   {section.type === "video" && <VideoSection section={section} />}
   {section.type === "text" && <TextSection section={section} />}

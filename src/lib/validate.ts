@@ -34,6 +34,7 @@ const heroSectionSchema = sectionBaseSchema.extend({
   type: z.literal("hero"),
   media: mediaRefSchema,
   mobileMedia: mediaRefSchema.optional(),
+  highlights: z.array(z.string().min(1)).optional(),
 });
 
 const imageSectionSchema = sectionBaseSchema.extend({

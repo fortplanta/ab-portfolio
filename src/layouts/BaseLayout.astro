@@ -7,6 +7,8 @@ interface IntroProps {
   heroSrc: string;
   heroAlt?: string;
   title: string;
+  client?: string;
+  highlights?: string[];
 }
 
 interface Props {
@@ -30,7 +32,17 @@ const { title, description, intro } = Astro.props;
     <ClientRouter />
   </head>
   <body>
-    {intro && <IntroAnimation heroSrc={intro.heroSrc} heroAlt={intro.heroAlt} title={intro.title} />}
+    {
+      intro && (
+        <IntroAnimation
+          heroSrc={intro.heroSrc}
+          heroAlt={intro.heroAlt}
+          title={intro.title}
+          client={intro.client}
+          highlights={intro.highlights}
+        />
+      )
+    }
     <slot />
   </body>
 </html>

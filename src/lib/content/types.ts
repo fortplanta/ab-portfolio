@@ -37,6 +37,8 @@ export interface HeroSection extends SectionBase {
   type: "hero";
   media: MediaRef;
   mobileMedia?: MediaRef;
+  /** Short notable lines shown bottom-right on the cover, e.g. awards. */
+  highlights?: string[];
 }
 
 export interface ImageSection extends SectionBase {
