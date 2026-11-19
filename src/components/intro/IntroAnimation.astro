@@ -203,7 +203,9 @@ const showClient = client && client.trim().toLowerCase() !== title.trim().toLowe
     return items
   }
 
-  // One random image per project, then top up from collection projects (e.g. Misc).
+  // Prefer one random image per project (collection projects like Misc are fine to
+  // repeat); if that leaves too few for a full collage, top up with any remaining
+  // images. Never the same image twice.
   function pickIntroImages(pool: PoolItem[], max: number): PoolItem[] {
     const byProject = new Map<string, PoolItem[]>()
     const collection: PoolItem[] = []
@@ -217,7 +219,9 @@ const showClient = client && client.trim().toLowerCase() !== title.trim().toLowe
     const singles = shuffle(
       [...byProject.values()].map((items) => items[Math.floor(Math.random() * items.length)]),
     ).slice(0, max)
-    return [...singles, ...shuffle(collection).slice(0, max - singles.length)]
+    const picked = [...singles, ...shuffle(collection).slice(0, max - singles.length)]
+    const rest = shuffle(pool.filter((item) => !picked.includes(item)))
+    return [...picked, ...rest.slice(0, max - picked.length)]
   }
 
   const LOAD_TIMEOUT_MS = 8000
@@ -243,6 +247,24 @@ const showClient = client && client.trim().toLowerCase() !== title.trim().toLowe
     })
   }
 
+  // Each scattered image gets the same visual area as its CSS slot but keeps its own
+  // aspect ratio, so nothing is cropped by object-fit: cover.
+  const PORTRAIT_SLOTS = [2, 3, 5, 6] // 1-based child indexes, mirrors the CSS
+  function fitToSlot(img: HTMLImageElement, index: number) {
+    const vw = window.innerWidth / 100
+    const vh = window.innerHeight / 100
+    const [slotW, slotH] = PORTRAIT_SLOTS.includes(index + 1) ? [12.5, 25.7] : [16.7, 20.6]
+    const area = slotW * vw * slotH * vh
+    const ratio = img.naturalWidth / img.naturalHeight || 1
+    let width = Math.sqrt(area * ratio)
+    let height = width / ratio
+    const scale = Math.min(1, (vw * 24) / width, (vh * 34) / height)
+    width *= scale
+    height *= scale
+    img.style.width = `${width}px`
+    img.style.height = `${height}px`
+  }
+
   let pool: PoolItem[] = []
   try {
     pool = JSON.parse(document.getElementById('intro-pool')?.textContent ?? '[]')
@@ -265,7 +287,10 @@ const showClient = client && client.trim().toLowerCase() !== title.trim().toLowe
       ...picked.map((item) => loadImage(item.src)),
     ])
     const images = loaded.filter((img): img is HTMLImageElement => img !== null)
-    images.forEach((img) => imagesWrapper.appendChild(img))
+    images.forEach((img, i) => {
+      fitToSlot(img, i)
+      imagesWrapper.appendChild(img)
+    })
 
     start(images)
   }
